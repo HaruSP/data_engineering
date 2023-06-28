@@ -17,6 +17,7 @@ from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
+from pyspark.sql.types import StringType, IntegerType, StructField, StructType, DateType
 
 from comlib import get_environment
 from comlib import get_json_from_s3
@@ -85,14 +86,6 @@ log_data = {
     "platform_dt" : "",
 }
 
-def value_check(id, input_value):
-    try:
-        value = df.select(id, df[input_value]).withColumn('row_num',lit(1))
-
-    except Exception as e:
-        value = None
-
-    return value
 
 filed_list = [
     "action_ejs",
@@ -129,8 +122,6 @@ filed_list = [
     "search_time"
 ]
 
-def value_checking(input):
-    print(input)
 
 try:
     start = time.time()
@@ -142,7 +133,7 @@ try:
             env=env
         )
 
-    # 가장 최신 인덱스명 가져오기
+    # 인덱스 존재 체크
     indices = es.indices.get_alias().keys()
     for x in indices:
         if x.startswith('hr_log_action') == True:
@@ -171,16 +162,16 @@ try:
         # Get the scroll ID
         sid = res['_scroll_id']
         scroll_size = len(res['hits']['hits'])     # 페이징 사이즈 1701(한 페이징에 10doc)
+        total_hits = res['hits']['total']['value']
 
         lst = []
         cnt = 0
 
         while scroll_size > 0:
             """Scrolling..."""
-
             cnt +=len(res['hits']['hits'])
-
             res_hits = res["hits"]["hits"]
+            
             for x in res_hits:
                 doc = x.get("_source")
 
