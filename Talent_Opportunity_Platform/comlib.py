@@ -248,18 +248,11 @@ def get_es_client(path_ca_certs, es_username, es_password, env, request_timeout=
         env = env.lower()
 
         if env=="dev":
-            hostname.append("https://ip-10-141-42-77.ap-northeast-2.compute.internal:9200")
+            hostname.append("https://ip-10-111-11-111.ap-northeast-2.compute.internal:9200")
         elif env=="stg":
-            hostname.append("https://ip-10-141-43-66.ap-northeast-2.compute.internal:9200")
+            hostname.append("https://ip-10-222-22-222.ap-northeast-2.compute.internal:9200")
         elif env=="prd":
-            hostname.append("https://ip-10-140-42-100.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-42-105.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-42-108.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-42-112.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-43-18.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-43-46.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-43-71.ap-northeast-2.compute.internal:9200")
-            hostname.append("https://ip-10-140-43-111.ap-northeast-2.compute.internal:9200")
+            hostname.append("https://ip-10-333-33-333.ap-northeast-2.compute.internal:9200")
 
         NODES.extend(hostname)
 
