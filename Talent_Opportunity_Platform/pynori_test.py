@@ -11,15 +11,18 @@ nori = KoreanAnalyzer(
 )
 
 # NNG, NNP (명사, 대명사) filter
-def _filter(term):
-    result = []
-    for _idx, _tag in enumerate(term['posTagAtt']):
-        if _tag in ['NNG', 'NNP', 'VA']:
-            result.append(term['termAtt'][_idx])
-    return result
+# def _filter(term):
+#     result = []
+#     for _idx, _tag in enumerate(term['posTagAtt']):
+#         if _tag in ['NNG', 'NNP', 'VA']:
+#             result.append(term['termAtt'][_idx])
+#     return result
 
 # Analyzer
 def _do_analysis(text):
-    return _filter(nori.do_analysis(text))
+    # return _filter(nori.do_analysis(text))
+    return nori.do_analysis(text)
 
-print(_do_analysis('적극적인 모습이 항상 멋져요'))
+sample = '업무를 미루지 않고 매사에 최선을 다하는 모습 보기 좋습니다.'
+full_analyzed_list = list(zip(nori.do_analysis(sample)['termAtt'], nori.do_analysis(sample)['posTagAtt']))
+print(full_analyzed_list)
