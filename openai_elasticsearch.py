@@ -6,11 +6,11 @@ from elasticsearch import Elasticsearch
 from django.shortcuts import render
 
 # Elasticsearch 호스트 및 포트 설정
-host = "https://imguru2.iptime.org:49202"
+host = "https://aaaaaa.iptime.org:49202"
 username = "elastic"
 password = "elastic"
 
-openai_api_key = "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"
+openai_api_key = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
 openai.api_key = openai_api_key
 
 
