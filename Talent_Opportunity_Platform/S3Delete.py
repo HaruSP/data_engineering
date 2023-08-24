@@ -14,21 +14,35 @@ job_name = args.get("JOB_NAME")
 job_run_id = args.get("JOB_RUN_ID")
 print("="*50)
 
-s3_src = boto3.resource('s3')
+s3_resource = boto3.resource('s3')
+s3_client = boto3.client('s3')
 
 env = get_environment(job_name)
 print(f"env: {env}")
 
 bucket = f"hr-rcmd-{env}"
-s3_src_bucket = s3_src.Bucket(bucket)
 path = "redshift/tmpdir"
 pprint(f"bucket: {bucket}")
 
 s3file_delete_cnt = 0
 
-for file in s3_src_bucket.object.filter(Prefix=path):
+# 현재 버전의 객체 삭제
+for file in s3_resource.Bucket(bucket).objects.filter(Prefix=path):
     s3file_delete_cnt += 1
-    s3_src_bucket.object.filter(Prefix=path).delete()
+    file.delete()
+
+# 버전 관리가 활성화된 경우 모든 버전의 객체 삭제
+versions = s3_client.list_object_versions(Bucket=bucket, Prefix=path)
+
+if 'DeleteMarkers' in versions:
+    for delete_marker in versions['DeleteMarkers']:
+        s3_client.delete_object(Bucket=bucket, Key=delete_marker['Key'], VersionId=delete_marker['VersionId'])
+        s3file_delete_cnt += 1
+
+if 'Versions' in versions:
+    for version in versions['Versions']:
+        s3_client.delete_object(Bucket=bucket, Key=version['Key'], VersionId=version['VersionId'])
+        s3file_delete_cnt += 1
 
 print(f"s3file_delete_cnt: {s3file_delete_cnt}\n")
 
