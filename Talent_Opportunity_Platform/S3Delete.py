@@ -32,17 +32,22 @@ for file in s3_resource.Bucket(bucket).objects.filter(Prefix=path):
     file.delete()
 
 # 버전 관리가 활성화된 경우 모든 버전의 객체 삭제
-versions = s3_client.list_object_versions(Bucket=bucket, Prefix=path)
+paginator = s3_client.get_paginator('list_object_versions')
 
-if 'DeleteMarkers' in versions:
-    for delete_marker in versions['DeleteMarkers']:
-        s3_client.delete_object(Bucket=bucket, Key=delete_marker['Key'], VersionId=delete_marker['VersionId'])
-        s3file_delete_cnt += 1
+for page in paginator.paginate(Bucket=bucket, Prefix=path)
 
-if 'Versions' in versions:
-    for version in versions['Versions']:
-        s3_client.delete_object(Bucket=bucket, Key=version['Key'], VersionId=version['VersionId'])
-        s3file_delete_cnt += 1
+    # in Versions
+    if 'Versions' in page:
+        for version_info in page['Versions']:
+            s3file_delete_cnt += 1
+            s3_client.delete_object(Bucket=bucket, Key=version_info['Key'], VersionId=version_info['VersionId'])
+
+    # in DeleteMarkers
+    if 'DeleteMarkers' in page:
+        for delete_marker in page['DeleteMarkers']:
+            s3file_delete_cnt += 1
+            s3_client.delete_object(Bucket=bucket, Key=delete_marker['Key'], VersionId=delete_marker['VersionId'])
+
 
 print(f"s3file_delete_cnt: {s3file_delete_cnt}\n")
 
