@@ -206,14 +206,22 @@ try:
             colleague_opi = re.sub('[^A-Za-z0-9ㄱ-힣!?, \./]', ' ', colleague_opi)
             colleague_opi = re.sub(' +', ' ', colleague_opi)
             
-            result = asyncio.run(colleague_praise_keyword(emp_no, colleague_opi, nori, model))
+            start_time = time.time()
+            # 20min over시 timeout
+            result = loop.run_until_complete(asyncio.wait_for(colleague_praise_keyword(emp_no, colleague_opi, nori, model), timeout=1200)) 
+            end_time = time.time()
+            scr = end_time - start_time
+            print(f'{emp_no} : {scr}초')
             colleague_ky_list+=result
             
+        except asyncio.TimeoutError:
+            print(f'Timeed out for employee: {emp_no}')
+            colleague_ky_list += [(emp_no, None, None)]
         except Exception as e:
             print(f'Error : {e}')
             print(f'에러발생한 직원번호 : {emp_no}')
             print(f'평가내용 : {colleague_opi}')
-            colleague_ky_list+=[(emp_no, None, None)]
+            colleague_ky_list += [(emp_no, None, None)]
         
 
         # break
